@@ -4,14 +4,35 @@
  * and open the template in the editor.
  */
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  *
  * @author jinwook
  */
 public class SecureSystem {
+	private ReferenceMonitor refMon;
+	private ArrayList<BLPsubject> subjects;
 
-    /**
+	private SecureSystem()
+	{
+		refMon = new ReferenceMonitor();
+		subjects = new ArrayList<BLPsubject>();
+	}
+
+	private ReferenceMonitor getReferenceMonitor()
+	{
+		return refMon;
+	}
+
+	private void createSubject(String name, SecurityLevel level)
+	{
+		BLPsubject subj = new BLPsubject(name);
+        subjects.add(subj);
+        getReferenceMonitor().createSubjectEntry(subj.name, level);
+	}
+	
+	/**
      * @param args the command line arguments
      */
     public static int main(String[] args) 
@@ -20,33 +41,61 @@ public class SecureSystem {
         {
         	File inputFile = new File(args[0]);
 
-        	if(!inputFile.exists())
+        	if(!SecureSystem.IsValidFile(inputFile))
         	{
-        		System.out.println("ERROR: FILE DOES NOT EXIST");
-        		return -1;
+        		SecureSystem.Fail();
+        	}
+
+        	SecureSystem sys = new SecureSystem();
+        	sys.createSubject("lyle", SecurityLevel.LOW);
+        	sys.createSubject("hal", SecurityLevel.HIGH);
+        	sys.getReferenceMonitor().createObject("Lobj", SecurityLevel.LOW);
+        	sys.getReferenceMonitor().createObject("Hobj", SecurityLevel.HIGH);
+
+        	FileReader fileReader = new FileReader(inputFile);
+        	try
+        	{
+	        	BufferedReader bufferedReader = new BufferedReader(fileReader);
+	        	StringBuffer stringBuffer = new StringBuffer();
+	        	String line;
+	        	
+	        	while ((line = bufferedReader.readLine()) != null)
+	        	{
+
+	        	}
+	        }
+	        finally
+	        {
+	        	fileReader.close();
+	        }
+
+	        System.exit(0);
+        }
+    }
+
+    private static boolean IsValidFile(File inputFile)
+    {
+    	if(!inputFile.exists())
+        	{
+        		SecureSystem.Log("ERROR: FILE DOES NOT EXIST");
+        		return false;
         	}
 
         	if(!inputFile.canRead())
         	{
-        		System.out.println("ERROR: CANNOT READ FILE");
-        		return -1;
+        		SecureSystem.Log("ERROR: CANNOT READ FILE");
+        		return false;
         	}
-
-        	FileReader fileReader = new FileReader(inputFile);
-        	BufferedReader bufferedReader = new BufferedReader(fileReader);
-        	StringBuffer stringBuffer = new StringBuffer();
-        	String line;
-
-        	while ((line = bufferedReader.readLine()) != null)
-        	{
-
-        	}
-
-        	fileReader.close();
-
-        }
     }
 
-    
+    private static void Log(String s)
+    {
+    	System.out.println(s);
+    }
+
+    private static void Fail()
+    {
+    	System.exit(-1);
+    }
     
 }

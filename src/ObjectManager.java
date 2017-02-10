@@ -12,6 +12,11 @@ import java.util.ArrayList;
  */
 public class ObjectManager {
     private ArrayList<BLPobject> objects;
+
+    public ObjectManager()
+    {
+        objects = new ArrayList<BLPobject>();
+    }
     
     private boolean exists(String name)
     {

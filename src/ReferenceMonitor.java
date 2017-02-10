@@ -16,7 +16,13 @@ public class ReferenceMonitor
     protected ArrayList<SecurityInfo> subjSecurityInfoList;
     protected ArrayList<SecurityInfo> objSecurityInfoList;
     
-    
+    public ReferenceMonitor()
+    {
+        objMan = new ObjectManager();
+        subjSecurityInfoList = new ArrayList<SecurityInfo>();
+        objSecurityInfoList = new ArrayList<SecurityInfo>();
+    }
+
     protected class SecurityInfo
     {
         protected SecurityLevel level;
