@@ -10,5 +10,20 @@ package blp.simple.security;
  * @author jinwook
  */
 public class BadInstruction {
-    
+    final private String errorMessage;
+
+    public BadInstruction()
+    {
+
+    }
+
+    public BadInstruction(String message)
+    {
+        errorMessage = message;
+    }
+
+    public String getErrorMessage()
+    {
+        return errorMessage;
+    }
 }

@@ -69,17 +69,20 @@ public class ReferenceMonitor
         {
             value = null;
         }
-        
+
+        BadInstruction bi;
         switch(instruction.command)
         {
             case READ:
                 if(objSL == null || subjSL == null)
                 {
                     // BAD INSTRUCTION - SYNTAX ERROR
+                    bi = new BadInstruction("READ: Invalid syntax. Object/Subject does not exist.");
                 }
                 else if (!subjSL.dominates(objSL))
                 {
                     // BAD INSTRUCTION - PERMISSION DENIED
+                    bi = new BadInstruction("READ: Permission Denied.");
                 }
                 else
                 {
@@ -89,10 +92,12 @@ public class ReferenceMonitor
                 if(objSL == null || subjSL == null || value == null)
                 {
                     // BAD INSTRUCTION - SYNTAX ERROR
+                    bi = new BadInstruction("WRITE: Invalid Syntax. Object/Subject/Value does not exist.")
                 }
                 else if (subjSL == SecurityLevel.LOW || !subjSL.dominates(objSL))
                 {
                     // BAD INSTRUCTION - PERMISSION DENIED
+                    bi = new BadInstruction("WRITE: Permission Denied.");
                 }
                 else
                 {
@@ -101,8 +106,10 @@ public class ReferenceMonitor
                     return -1;
                 }
             default:
-                break;
+                // BAD INTRUCTION - SYNTAX ERROR
+                bi = new BadInstruction("READ/WRITE Command Does Not Exist");
         }
-        
+        if (bi != null)
+            System.out.println(bi.getErrorMessage());
     }
 }
