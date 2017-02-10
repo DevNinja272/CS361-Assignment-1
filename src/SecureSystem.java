@@ -3,14 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package blp.simple.security;
 
 
 /**
  *
  * @author jinwook
  */
-public class BLPSimpleSecurity {
+public class SecureSystem {
 
     /**
      * @param args the command line arguments
