@@ -5,10 +5,32 @@
  */
 package blp.simple.security;
 
+enum Instructions
+{
+    READ,
+    WRITE,
+    BAD
+}
+
 /**
  *
  * @author jinwook
  */
 public class InstructionObject {
+    Instructions command;
+    String subj;
+    String obj;
+    String val;
     
+    public InstructionObject()
+    {
+        command = Instructions.BAD;
+    }
+    
+    public InstructionObject(String subj, String obj, String val)
+    {
+        this.subj = subj;
+        this.obj = obj;
+        this.val = val;
+    }
 }

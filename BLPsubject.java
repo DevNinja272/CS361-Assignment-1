@@ -11,7 +11,36 @@ package blp.simple.security;
  */
 public class BLPsubject 
 {
-    SecurityLevel level;
-    String name;
-    int TEMP = 0;
+    private String name;
+    private int TEMP;
+    
+    public BLPsubject()
+    {
+        TEMP = 0;
+    }
+    
+    public BLPsubject(String name)
+    {
+        this.name = name.toLowerCase();
+    }
+    
+    public String getName()
+    {
+        return name;
+    }
+    
+    public int getTemp()
+    {
+        return TEMP;
+    }
+    
+    public void setTemp(int val)
+    {
+        TEMP = val;
+    }
+    
+    public boolean equals(BLPsubject subject)
+    {
+        return name == subject.name;
+    }
 }

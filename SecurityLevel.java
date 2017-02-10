@@ -6,35 +6,21 @@
 package blp.simple.security;
 import java.lang.Comparable;
 
-enum Level
-{
-    HIGH, 
-    LOW
-}
-
 /**
  *
  * @author jinwook
  */
-public class SecurityLevel implements Comparable<SecurityLevel>
+public enum SecurityLevel
 {
-    Level level;
-    
-    public int compareTo(SecurityLevel sl)
-    {
-        switch (sl.level)
-        {
-            case HIGH:
-                return this.level == Level.HIGH ? 0 : -1;
-            case LOW:
-                return this.level == Level.HIGH ? 1 : 0;
-            default:
-                return this.level.compareTo(sl.level);
-        }
-    }
+    HIGH, LOW;
     
     public boolean dominates(SecurityLevel sl)
     {
-        return this.compareTo(sl) >= 0;
+        return this == HIGH ? true : sl == LOW ? true : false;
+    }
+    
+    public boolean equals(SecurityLevel sl)
+    {
+        return this == sl;
     }
 }
