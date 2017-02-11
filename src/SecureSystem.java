@@ -77,7 +77,7 @@ public class SecureSystem {
 			while ((line = bufferedReader.readLine()) != null)
 			{
 				line = line.trim().toLowerCase();
-				if(line != "")
+				if(!line.equals(""))
 				{
 					sys.getReferenceMonitor().execute(new InstructionObject(line));
 				}
