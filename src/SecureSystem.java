@@ -28,10 +28,18 @@ public class SecureSystem {
 	private void createSubject(String name, SecurityLevel level)
 	{
 		BLPsubject subj = new BLPsubject(name);
-        subjects.add(subj);
-        getReferenceMonitor().createSubjectEntry(subj.name, level);
+		if(!subjects.contains(subj))
+		{
+	        subjects.add(subj);
+	        getReferenceMonitor().createSubjectEntry(subj.name, level);
+		}
 	}
-	
+
+	private boolean subjExists(BLPsubject subj)
+	{
+		return subjects.contains(subj);
+	}
+
 	/**
      * @param args the command line arguments
      */
@@ -61,7 +69,10 @@ public class SecureSystem {
 	        	
 	        	while ((line = bufferedReader.readLine()) != null)
 	        	{
-
+	        		if(line != null)
+	        		{
+	        			String words = line.trim().replaceAll("\\p{javaSpaceChar}{2,}"," ").split();
+	        		}
 	        	}
 	        }
 	        finally

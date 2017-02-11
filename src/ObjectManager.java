@@ -20,10 +20,7 @@ public class ObjectManager {
     
     private boolean exists(String name)
     {
-        for(BLPobject obj: objects)
-            if(obj.name == name.toLowerCase())
-                return true;
-        return false;
+        return objects.contains(new BLPobject(name));
     }
     
     private BLPobject get(String name)
