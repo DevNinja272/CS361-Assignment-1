@@ -39,9 +39,11 @@ public class ReferenceMonitor
     {
         for(SecurityInfo si: subjSecurityInfoList)
         {
-            if(si.item.equals(item))
+            if (si != null && si.item != null && si.item instanceof BLPsubject)
             {
-                return si.level;
+                if (((BLPsubject)(si.item)).equals(item)) {
+                    return si.level;
+                }
             }
         }
         return null;
@@ -66,8 +68,11 @@ public class ReferenceMonitor
 
     public void createObject(String name, SecurityLevel level)
     {
-        objMan.createObject(name);
-        objSecurityInfoList.add(new SecurityInfo(name, level));
+        BLPobject obj = objMan.createObject(name);
+        if (obj != null)
+        {
+            objSecurityInfoList.add(new SecurityInfo(obj.getName(), level));
+        }
     }
 
     public void printState()
@@ -92,85 +97,96 @@ public class ReferenceMonitor
                 System.out.println(s);
             }
         }
+
+        System.out.println();
     }
 
-    public int execute(InstructionObject instruction)
+    public void execute(InstructionObject instruction)
     {
-        SecurityLevel objSL = getObjSecurityLevel(instruction.obj);
-        SecurityLevel subjSL = getSubjSecurityLevel(instruction.subj);
-        Integer value;
-        try
-        {
-            value = Integer.valueOf(instruction.val);
-        }
-        catch(NumberFormatException e)
-        {
-            value = null;
-        }
+        SecurityLevel objSL = getObjSecurityLevel(instruction.getObj());
+        SecurityLevel subjSL = getSubjSecurityLevel(instruction.getSubj());
 
-        BadInstruction bi;
-        String result;
-        switch(instruction.command)
+        BadInstruction bi = null;
+        String result = null;
+        switch(instruction.getCommand())
         {
-            case READ:
+            case "read":
+                result = instruction.getSubj()
+                        + " reads "
+                        + instruction.getObj();
+
                 if(objSL == null || subjSL == null)
                 {
-                        // BAD INSTRUCTION - SYNTAX ERROR
+                    // BAD INSTRUCTION - SYNTAX ERROR
                     bi = new BadInstruction("READ: Invalid syntax. Object/Subject does not exist.");
                 }
-                else if (!subjSL.dominates(objSL))
-                {
-                        // BAD INSTRUCTION - PERMISSION DENIED
-                    bi = new BadInstruction("READ: Permission Denied.");
-                }
                 else
                 {
-                    int value = objMan.read(instruction.obj);
+                    int value = objMan.read(instruction.getObj());
+                    if (!subjSL.dominates(objSL))
+                    {
+                        value = 0;
+                    }
+
                     for(SecurityInfo si: subjSecurityInfoList)
                     {
-                        BLPsubject subj = (BLPsubject)si.item;
-                        result = subj.getName().toLowerCase()
-                                + " reads "
-                                + instruction.obj.toLowerCase();
+                        if (si != null && si.item != null && si.item instanceof BLPsubject)
+                        {
+                            BLPsubject subj = (BLPsubject) si.item;
+                            if (subj.getName().equals(instruction.getSubj()))
+                            {
+                                subj.setTemp(value);
+                                break;
+                            }
+                        }
                     }
                 }
-            case WRITE:
+                break;
+            case "write":
+                Integer value;
+                try
+                {
+                    value = Integer.valueOf(instruction.getVal());
+                }
+                catch(NumberFormatException e)
+                {
+                    value = null;
+                }
+
+                result = instruction.getSubj().toLowerCase()
+                        + " writes value "
+                        + value
+                        + " to "
+                        + instruction.getObj().toLowerCase();
+
                 if(objSL == null || subjSL == null || value == null)
                 {
-                        // BAD INSTRUCTION - SYNTAX ERROR
-                    bi = new BadInstruction("WRITE: Invalid Syntax. Object/Subject/Value does not exist.")
+                    // BAD INSTRUCTION - SYNTAX ERROR
+                    bi = new BadInstruction("WRITE: Invalid Syntax. Object/Subject/Value does not exist.");
                 }
-                else if (subjSL == SecurityLevel.LOW || !subjSL.dominates(objSL))
+                else if (subjSL == SecurityLevel.HIGH && objSL == SecurityLevel.LOW)
                 {
-                        // BAD INSTRUCTION - PERMISSION DENIED
-                    bi = new BadInstruction("WRITE: Permission Denied.");
+                    // BAD INSTRUCTION - PERMISSION DENIED
                 }
                 else
                 {
-                    if(objMan.write(instruction.obj, value))
+                    if(!objMan.write(instruction.getObj(), value))
                     {
-                        result = instruction.obj.toLowerCase()
-                                + " writes value " 
-                                + instruction.value + " to "
-                                + instruction.subj.toLowerCase();
-                    }
-                    else
-                    {
-                        bi = new BadInstruction();
+                        bi = new BadInstruction("Write failed.");
                     }
                 }
+                break;
             default:
-                // BAD INTRUCTION - SYNTAX ERROR
-                bi = new BadInstruction("READ/WRITE Command Does Not Exist");
+                // BAD INSTRUCTION - SYNTAX ERROR
+                bi = new BadInstruction("Command does not exist");
         }
 
         if (bi != null)
         {
             result = bi.toString();
         }
-        else 
-        {
-            System.out.println(result);
-        }
+
+        System.out.println(result != null ? result : new BadInstruction("Unknown error."));
+        printState();
     }
 }

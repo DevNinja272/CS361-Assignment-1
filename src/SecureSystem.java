@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
 import java.util.ArrayList;
 
 /**
@@ -43,7 +45,7 @@ public class SecureSystem {
 	/**
      * @param args the command line arguments
      */
-    public static int main(String[] args) 
+    public static void main(String[] args)
     {
         if(args.length > 0)	// Valid File
         {
@@ -62,47 +64,46 @@ public class SecureSystem {
 
         	SecureSystem.execute(sys, inputFile);
         }
-
-        System.exit(0);
     }
 
     private static void execute(SecureSystem sys, File inputFile)
     {
-    	FileReader fileReader = new FileReader(inputFile);
-        	try
-        	{
-	        	BufferedReader bufferedReader = new BufferedReader(fileReader);
-	        	StringBuffer stringBuffer = new StringBuffer();
-	        	String line;
-	        	
-	        	while ((line = bufferedReader.readLine() != null)
-	        	{
-	        		line = line.trim().toLowerCase();
-	        		if(line != "")
-	        		{
-	        			sys.getReferenceMonitor().execute(new InstructionObject(line));
-	        		}
-	        	}
-	        }
-	        finally
-	        {
-	        	fileReader.close();
-	        }
+		BufferedReader bufferedReader;;
+		try
+		{
+		    bufferedReader = new BufferedReader(new FileReader(inputFile));
+
+			String line;
+			while ((line = bufferedReader.readLine()) != null)
+			{
+				line = line.trim().toLowerCase();
+				if(line != "")
+				{
+					sys.getReferenceMonitor().execute(new InstructionObject(line));
+				}
+			}
+		}
+		catch (Exception e)
+        {
+            System.out.println("Error opening file.");
+        }
     }
 
     private static boolean IsValidFile(File inputFile)
     {
     	if(!inputFile.exists())
-        	{
-        		SecureSystem.Log("ERROR: FILE DOES NOT EXIST");
-        		return false;
-        	}
+        {
+            SecureSystem.Log("ERROR: FILE DOES NOT EXIST");
+            return false;
+        }
 
-        	if(!inputFile.canRead())
-        	{
-        		SecureSystem.Log("ERROR: CANNOT READ FILE");
-        		return false;
-        	}
+        if(!inputFile.canRead())
+        {
+            SecureSystem.Log("ERROR: CANNOT READ FILE");
+            return false;
+        }
+
+        return true;
     }
 
     private static void Log(String s)

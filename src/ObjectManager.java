@@ -23,10 +23,10 @@ public class ObjectManager {
         return objects.contains(new BLPobject(name));
     }
     
-    private BLPobject get(String name)
+    public BLPobject get(String name)
     {
         for(BLPobject obj: objects)
-            if(obj.name == name.toLowerCase())
+            if(obj.name.equals(name.toLowerCase()))
                 return obj;
         return null;
     }

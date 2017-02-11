@@ -9,12 +9,7 @@
  * @author jinwook
  */
 public class BadInstruction {
-    final private String errorMessage;
-
-    public BadInstruction()
-    {
-
-    }
+    private String errorMessage;
 
     public BadInstruction(String message)
     {

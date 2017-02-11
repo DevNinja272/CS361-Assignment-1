@@ -4,46 +4,49 @@
  * and open the template in the editor.
  */
 
-enum Instructions
-{
-    READ,
-    WRITE,
-    BAD
-}
+import java.util.ArrayList;
 
 /**
  *
  * @author jinwook
  */
 public class InstructionObject {
-    private final Instructions command;
-    private final String subj;
-    private final String obj;
-    private final String val;
-    
-    private InstructionObject()
+    private String command;
+    private String subj;
+    private String obj;
+    private String val;
+
+    private InstructionObject(String command, String subj, String obj)
     {
-        command = Instructions.BAD;
+        this.command = command;
+        this.subj = subj;
+        this.obj = obj;
+    }
+
+    private InstructionObject(String command, String subj, String obj, String val)
+    {
+        this(command, subj, obj);
+        this.val = val;
     }
     
-    private InstructionObject(String line)
+    public InstructionObject(String line)
     {
         if(line != null)
         {
-            ArrayList<String> words = line.trim().replaceAll("\\p{javaSpaceChar}{2,}"," ").split();
+            String[] words = line.trim().replaceAll("\\p{javaSpaceChar}{2,}", " ").split(" ");
             int counter = 0;
-            if(words.size() > counter)
+            if(words.length > counter)
             {
-                command = words.get(counter++);
-                if(words.size() > counter)
+                this.command = words[counter++];
+                if(words.length > counter)
                 {
-                    subject = words.get(counter++);
-                    if(words.size() > counter)
+                    this.subj = words[counter++];
+                    if(words.length > counter)
                     {
-                        object = words.get(counter++);
-                        if(words.size() > counter)
+                        this.obj = words[counter++];
+                        if(words.length > counter)
                         {
-                            val = words.get(counter++);
+                            this.val = words[counter];
                         }
                     }
                 }
@@ -51,12 +54,7 @@ public class InstructionObject {
         }
     }
 
-    private InstructionObject(String subj, String obj, String val)
-    {
-        this.subj = subj;
-        this.obj = obj;
-        this.val = val;
-    }
+    public String getCommand() { return command; }
 
     public String getSubj()
     {

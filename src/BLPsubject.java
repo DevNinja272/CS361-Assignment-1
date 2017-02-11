@@ -37,9 +37,30 @@ public class BLPsubject
     {
         TEMP = val;
     }
-    
+
     public boolean equals(BLPsubject subject)
     {
-        return name == subject.name;
+        return getName().equals(subject.getName());
+    }
+
+    public boolean equals(String name)
+    {
+        return getName().equals(name);
+    }
+
+    public boolean equals(Object item)
+    {
+        if (item instanceof String)
+        {
+            return this.equals((String)item);
+        }
+        else if (item instanceof BLPsubject)
+        {
+            return this.equals((BLPsubject)item);
+        }
+        else
+        {
+            return ((Object)this).equals(item);
+        }
     }
 }

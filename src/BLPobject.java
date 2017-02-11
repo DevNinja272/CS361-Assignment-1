@@ -47,6 +47,27 @@ public class BLPobject
     
     public boolean equals(BLPobject object)
     {
-        return name == object.name;
+        return getName().equals(object.getName());
+    }
+
+    public boolean equals(String name)
+    {
+        return getName().equals(name);
+    }
+
+    public boolean equals(Object item)
+    {
+        if (item instanceof  BLPobject)
+        {
+            return this.equals((BLPobject)item);
+        }
+        else if (item instanceof String)
+        {
+            return this.equals((String)item);
+        }
+        else
+        {
+            return ((Object)this).equals(item);
+        }
     }
 }
