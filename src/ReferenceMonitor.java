@@ -38,116 +38,139 @@ public class ReferenceMonitor
     private SecurityLevel getSubjSecurityLevel(Object item)
     {
         for(SecurityInfo si: subjSecurityInfoList)
+        {
             if(si.item.equals(item))
+            {
                 return si.level;
-            return null;
+            }
+        }
+        return null;
+    }
+
+    private SecurityLevel getObjSecurityLevel(Object item)
+    {
+        for(SecurityInfo si: objSecurityInfoList)
+        {
+            if(si.item.equals(item))
+            {
+                return si.level;
+            }
+        }
+        return null;
+    }
+
+    public void createSubjectEntry(BLPsubject subj, SecurityLevel level)
+    {
+        subjSecurityInfoList.add(new SecurityInfo(subj, level));
+    }
+
+    public void createObject(String name, SecurityLevel level)
+    {
+        objMan.createObject(name);
+        objSecurityInfoList.add(new SecurityInfo(name, level));
+    }
+
+    public void printState()
+    {
+        System.out.println("The current state is:");
+        for(SecurityInfo si: objSecurityInfoList)
+        {
+            if (si != null && si.item != null) 
+            {
+                BLPobject obj = objMan.get(si.item.toString());
+                String s = "\t" + obj.getName() + " has value: " + obj.getValue();
+                System.out.println(s);
+            }
         }
 
-        private SecurityLevel getObjSecurityLevel(Object item)
+        for(SecurityInfo si: subjSecurityInfoList)
         {
-            for(SecurityInfo si: objSecurityInfoList)
-                if(si.item.equals(item))
-                    return si.level;
-                return null;
-            }
-
-            public void createSubjectEntry(BLPsubject subj, SecurityLevel level)
+            if (si != null && si.item != null && si.item instanceof BLPsubject) 
             {
-                subjSecurityInfoList.add(new SecurityInfo(subj, level));
+                BLPsubject subj = (BLPsubject)si.item;
+                String s = "\t" + subj.getName() + " has recently read: " + subj.getTemp();
+                System.out.println(s);
             }
+        }
+    }
 
-            public void createObject(String name, SecurityLevel level)
-            {
-                objMan.createObject(name);
-                objSecurityInfoList.add(new SecurityInfo(name, level));
-            }
+    public int execute(InstructionObject instruction)
+    {
+        SecurityLevel objSL = getObjSecurityLevel(instruction.obj);
+        SecurityLevel subjSL = getSubjSecurityLevel(instruction.subj);
+        Integer value;
+        try
+        {
+            value = Integer.valueOf(instruction.val);
+        }
+        catch(NumberFormatException e)
+        {
+            value = null;
+        }
 
-            public void printState()
-            {
-                System.out.println("The current state is:");
-                for(SecurityInfo si: objSecurityInfoList)
+        BadInstruction bi;
+        String result;
+        switch(instruction.command)
+        {
+            case READ:
+                if(objSL == null || subjSL == null)
                 {
-                    if (si != null && si.item != null) 
-                    {
-                        BLPobject obj = objMan.get(si.item.toString());
-                        String s = "\t" + obj.getName() + " has value: " + obj.getValue();
-                        System.out.println(s);
-                    }
+                        // BAD INSTRUCTION - SYNTAX ERROR
+                    bi = new BadInstruction("READ: Invalid syntax. Object/Subject does not exist.");
                 }
-
-                for(SecurityInfo si: subjSecurityInfoList)
+                else if (!subjSL.dominates(objSL))
                 {
-                    if (si != null && si.item != null && si.item instanceof BLPsubject) 
+                        // BAD INSTRUCTION - PERMISSION DENIED
+                    bi = new BadInstruction("READ: Permission Denied.");
+                }
+                else
+                {
+                    int value = objMan.read(instruction.obj);
+                    for(SecurityInfo si: subjSecurityInfoList)
                     {
                         BLPsubject subj = (BLPsubject)si.item;
-                        String s = "\t" + subj.getName() + " has recently read: " + subj.getTemp();
-                        System.out.println(s);
+                        result = subj.getName().toLowerCase()
+                                + " reads "
+                                + instruction.obj.toLowerCase();
                     }
                 }
-            }
-
-            public int execute(InstructionObject instruction)
-            {
-                SecurityLevel objSL = getObjSecurityLevel(instruction.obj);
-                SecurityLevel subjSL = getSubjSecurityLevel(instruction.subj);
-                Integer value;
-                try
+            case WRITE:
+                if(objSL == null || subjSL == null || value == null)
                 {
-                    value = Integer.valueOf(instruction.val);
+                        // BAD INSTRUCTION - SYNTAX ERROR
+                    bi = new BadInstruction("WRITE: Invalid Syntax. Object/Subject/Value does not exist.")
                 }
-                catch(NumberFormatException e)
+                else if (subjSL == SecurityLevel.LOW || !subjSL.dominates(objSL))
                 {
-                    value = null;
+                        // BAD INSTRUCTION - PERMISSION DENIED
+                    bi = new BadInstruction("WRITE: Permission Denied.");
                 }
-
-                BadInstruction bi;
-                String result;
-                switch(instruction.command)
+                else
                 {
-                    case READ:
-                    if(objSL == null || subjSL == null)
+                    if(objMan.write(instruction.obj, value))
                     {
-                    // BAD INSTRUCTION - SYNTAX ERROR
-                        bi = new BadInstruction("READ: Invalid syntax. Object/Subject does not exist.");
-                    }
-                    else if (!subjSL.dominates(objSL))
-                    {
-                    // BAD INSTRUCTION - PERMISSION DENIED
-                        bi = new BadInstruction("READ: Permission Denied.");
+                        result = instruction.obj.toLowerCase()
+                                + " writes value " 
+                                + instruction.value + " to "
+                                + instruction.subj.toLowerCase();
                     }
                     else
                     {
-                        return objMan.read(instruction.obj);
+                        bi = new BadInstruction();
                     }
-                    case WRITE:
-                    if(objSL == null || subjSL == null || value == null)
-                    {
-                    // BAD INSTRUCTION - SYNTAX ERROR
-                        bi = new BadInstruction("WRITE: Invalid Syntax. Object/Subject/Value does not exist.")
-                    }
-                    else if (subjSL == SecurityLevel.LOW || !subjSL.dominates(objSL))
-                    {
-                    // BAD INSTRUCTION - PERMISSION DENIED
-                        bi = new BadInstruction("WRITE: Permission Denied.");
-                    }
-                    else
-                    {
-                        if(objMan.write(instruction.obj, value))
-                            return 0;
-                        return -1;
-                    }
-                    default:
+                }
+            default:
                 // BAD INTRUCTION - SYNTAX ERROR
-                    bi = new BadInstruction("READ/WRITE Command Does Not Exist");
-                }
-
-                if (bi != null)
-                {
-                    result = bi.toString();
-                }
-                else 
-                {
-                    System.out.println(result);
-                }
-            }
+                bi = new BadInstruction("READ/WRITE Command Does Not Exist");
         }
+
+        if (bi != null)
+        {
+            result = bi.toString();
+        }
+        else 
+        {
+            System.out.println(result);
+        }
+    }
+}
