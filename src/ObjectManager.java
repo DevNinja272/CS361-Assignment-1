@@ -48,19 +48,19 @@ public class ObjectManager {
         return false;
     }
     
-    public boolean createObject(String name)
+    public BLPobject createObject(String name)
     {
         if(exists(name))
-            return false;
-        objects.add(new BLPobject(name.toLowerCase()));
-        return true;
+            return null;
+        BLPobject obj = new BLPobject(name);
+        return objects.add(obj) ? obj : null;
     }
     
-    public boolean createObject(String name, int value)
+    public BLPobject createObject(String name, int value)
     {
-        if(!createObject(name))
-            return false;
-        write(name, value);
-        return true;
+        BLPobject obj = createObject(name);
+        if(obj != null)
+            write(name, value);
+        return obj;
     }
 }

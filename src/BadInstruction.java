@@ -25,4 +25,9 @@ public class BadInstruction {
     {
         return errorMessage;
     }
+
+    public String toString()
+    {
+        return "Bad Instruction";
+    }
 }

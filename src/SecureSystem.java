@@ -31,7 +31,7 @@ public class SecureSystem {
 		if(!subjects.contains(subj))
 		{
 	        subjects.add(subj);
-	        getReferenceMonitor().createSubjectEntry(subj.name, level);
+	        getReferenceMonitor().createSubjectEntry(subj, level);
 		}
 	}
 
@@ -60,7 +60,15 @@ public class SecureSystem {
         	sys.getReferenceMonitor().createObject("Lobj", SecurityLevel.LOW);
         	sys.getReferenceMonitor().createObject("Hobj", SecurityLevel.HIGH);
 
-        	FileReader fileReader = new FileReader(inputFile);
+        	SecureSystem.execute(sys, inputFile);
+        }
+
+        System.exit(0);
+    }
+
+    private static void execute(SecureSystem sys, File inputFile)
+    {
+    	FileReader fileReader = new FileReader(inputFile);
         	try
         	{
 	        	BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -79,9 +87,6 @@ public class SecureSystem {
 	        {
 	        	fileReader.close();
 	        }
-
-	        System.exit(0);
-        }
     }
 
     private static boolean IsValidFile(File inputFile)
