@@ -67,11 +67,11 @@ public class SecureSystem {
 	        	StringBuffer stringBuffer = new StringBuffer();
 	        	String line;
 	        	
-	        	while ((line = bufferedReader.readLine()) != null)
+	        	while ((line = bufferedReader.readLine() != null)
 	        	{
-	        		if(line != null)
+	        		if(line.trim() != "")
 	        		{
-	        			String words = line.trim().replaceAll("\\p{javaSpaceChar}{2,}"," ").split();
+	        			sys.getReferenceMonitor().execute(new InstructionObject(line));
 	        		}
 	        	}
 	        }
