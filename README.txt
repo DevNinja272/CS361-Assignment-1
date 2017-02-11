@@ -6,7 +6,10 @@ EMAIL: jinwook.kim@utexas.edu; jesse.wright@utexas.edu;
 
 [Program 1]
 [Description]
-There are 8 java files: We used Extreme Programming and pair programming that we learned in SWE. Jin drove the most of the code, while Jesse instructed him on what to write. Afterwards, Jesse took over and cleaned up, debugged all of the code. Jin then made test cases for our code. To our program, "javac *.java". To run our program, you need to use "java SecureSystem instructionList".
+There are 8 java files: We used the pair-programming methodology from "Extreme Programming Installed" (see https://books.google.com/books?id=5ZuPjdO8LLoC&printsec=frontcover&dq=Extreme+Programming+Explained&hl=en&sa=X&ved=0ahUKEwjq1eyqmYfSAhWEKiYKHQpuAVEQ6wEINDAE#v=onepage&q=Extreme%20Programming%20Explained&f=false and https://www.cs.utexas.edu/users/downing/papers/Pair.Programming.2000.pdf) that we learned in CS373: Software Engineering with Glenn Downing and Fares Fraij. Jinwook Kim drove the most of the code, while Jesse Wright oversaw overall design and architecture. Afterwards, Wright took over and cleaned up and debugged teh final code. Kim then made test cases for the code. To compile our program, use the command "javac *.java" as specified in the specifications. To run the program, use "java SecureSystem instructionList" as specified in the specifications.
+
+[Finish]
+We finished all of the requirements for this program (as best we could understand the requirements in the specifications).
 
 [Test Cases]
 [Input of test 1]
